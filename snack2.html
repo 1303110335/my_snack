@@ -17,18 +17,17 @@
 		this.y = y;
 		this.w = w;
         var _this = this;
-        this.foods = new Array();
-
+		
         this.initFood = function(){
-            var canvas = document.getElementById('can');
-            var ctx = canvas.getContext('2d');
+			var canvas = document.getElementById('can');
+			var ctx = canvas.getContext('2d');
             ctx.fillStyle = '#ff0000';
             ctx.fillRect(x,y,w,w);
         }
 
         this.initSnack = function(){
-            var canvas = document.getElementById('can');
-            var ctx = canvas.getContext('2d');
+			var canvas = document.getElementById('can');
+			var ctx = canvas.getContext('2d');
             ctx.fillStyle = '#000000';
             ctx.strokeStyle = '#ffffff';
             ctx.strokeRect(x,y,w,w);
@@ -36,13 +35,13 @@
         }
 
         this.cancel = function(){
-
+			
         }
 
     }
 
-    //var food = new node();
-    //food.initFood();
+    var no = new node(10,10,10);
+    no.initFood();
 
     function Snack(x,y,length){
         var _this = this;
@@ -65,9 +64,9 @@
 
     }
 
-    var snack = new Snack(10,10,10);
+    //var snack = new Snack(10,10,10);
 
-    snack.init();
+    //snack.init();
 
 
 </script>
