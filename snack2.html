@@ -12,28 +12,21 @@
 </body>
 <script type="text/javascript">
 
-    function node(){
+    function node(x,y,w){
+		this.x = x;
+		this.y = y;
+		this.w = w;
         var _this = this;
         this.foods = new Array();
-        this.foodsInterval = 0;
+
         this.initFood = function(){
             var canvas = document.getElementById('can');
-            var maxX = canvas.width,maxY = canvas.height;
-            var x = parseInt(Math.random()*maxX/10)*10;
-            var y = parseInt(Math.random()*maxY/10)*10;
-            var w = 10;
             var ctx = canvas.getContext('2d');
             ctx.fillStyle = '#ff0000';
             ctx.fillRect(x,y,w,w);
-            _this.foods.push([x,y]);
-            var food_len = _this.foods.length;
-            if(food_len >=5){
-                clearInterval(_this.foodsInterval);
-            }
-
         }
 
-        this.initSnack = function(x,y,w){
+        this.initSnack = function(){
             var canvas = document.getElementById('can');
             var ctx = canvas.getContext('2d');
             ctx.fillStyle = '#000000';
@@ -41,8 +34,6 @@
             ctx.strokeRect(x,y,w,w);
             ctx.fillRect(x,y,w,w);
         }
-
-        _this.foodsInterval = setInterval(this.initFood,1000);
 
         this.cancel = function(){
 
