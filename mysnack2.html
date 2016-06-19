@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<style>
+    canvas{border: solid 2px #ccc;}
+</style>
+<body>
+<!--
+1.画布
+-->
+    <canvas id="can" width="400px" height="300px"></canvas>
+</body>
+<script type="text/javascript">
+
+    var foods = new Array();//存放食物坐标
+    function node(x,y,w){
+        var _this = this;
+        this.x = x;
+        this.y = y;
+        this.w = w;
+
+        this.equals = function(node){
+            //(如果将两个对象用==比较，则会返回flase，因为对象的比较是对内存地址的比较，判断是否引用同一对象)
+            if(this.x == node.x && this.y == node.y){
+                return true;
+            }else return false;
+        }
+        //2.食物
+        this.foodInit = function(){
+            var obj = document.getElementById('can');
+            var cxt = obj.getContext('2d');
+            cxt.fillStyle = '#ff0000';
+            cxt.fillRect(x,y,w,w);
+        }
+        //2.初始化贪吃蛇
+        this.snackInit = function(){
+            var obj = document.getElementById('can');
+            var cxt = obj.getContext('2d');
+            cxt.fillStyle = '#000000';
+            cxt.strokeStyle = '#ffffff';
+            cxt.fillRect(x,y,w,w);
+            cxt.strokeRect(x,y,w,w);
+        }
+
+        this.clear = function(){
+            var obj = document.getElementById('can');
+            var cxt = obj.getContext('2d');
+            cxt.fillStyle = '#FFFFFF';
+            cxt.strokeStyle = '#FFFFFF';
+            cxt.fillRect(x,y,w,w);
+            cxt.strokeRect(x,y,w,w);
+        }
+
+    }
+	
+	
+	function farm(){
+		var _this = this;
+		this.w = 10;
+		this.interval = 0;
+		this.addFood = function(){
+			var obj = document.getElementById('can');
+			var x = parseInt(Math.random() * obj.width/10)*10;
+			var y = parseInt(Math.random() * obj.height/10)*10;
+			var food = new node(x,y,_this.w);
+			food.foodInit();
+			foods.push(food);
+			if(foods.length >= 5){
+				clearInterval(_this.interval);
+			}
+		}
+		
+		_this.interval = setInterval(_this.addFood,1000);
+		
+	}
+
+	var farm = new farm();
+	farm.addFood();
+
+    function snack(x,y,len,speed){
+        var _this = this;
+        this.speed = speed;
+		this.nodes = new Array();
+		this.len = 5;
+		this.odir = 'U';//原来的方向
+		this.dir = 'R';//现在的方向
+
+		//初始化一整条蛇
+        var init = function (){
+            _this.len = len;
+            _this.dir = 'R';
+            var nx = x;
+            var ny = y;
+            var nw = 10;
+            for(var i=0;i<len;i++){
+                var no = new node(nx,ny,nw);
+                _this.nodes[i] = no;
+                no.snackInit();
+                nx -= nw;
+            }
+        }
+
+        //蛇动起来
+        this.move = function(){
+            var cut = true;
+			var head = _this.nodes[0];
+			var hx = head.x, hy = head.y ,hw = head.w;
+			var obj = document.getElementById('can');
+			var maxX = obj.width , maxY = obj.height;
+			switch(_this.dir){
+				case 'R':{
+					if(hx+hw>maxX){
+						var no = new node(0,hy,hw);
+					}else{
+						var no = new node(hx+hw,hy,hw);
+					}
+				};break;
+				case 'L':{
+					if(hx-hw<0){
+						var no = new node(maxX,hy,hw);
+					}else{
+						var no = new node(hx-hw,hy,hw);
+					}
+				};break;
+				case 'U':{
+					if(hy-hw <0 ){
+						var no = new node(hx,maxY,hw);
+					}else{
+						var no = new node(hx,hy-hw,hw);
+					}
+				};break;
+				case 'D':{
+					if(hy+hw > maxY){
+						var no = new node(hx,0,hw);
+					}else{
+						var no = new node(hx,hy+hw,hw);
+					}
+				};break;
+                default:
+                    var no = new node(hx-hw,hy,hw);
+                    break;
+			}
+
+            console.log(_this.dir);
+
+			//判断no是不是自身
+			for (var index in _this.nodes){
+				if(_this.nodes[index].equals(no)){
+					_this.stop();
+                    return;
+				}
+			}
+			//在不是糖果且不是自身的情况下切去尾部
+
+            var len = parseInt(_this.len);
+
+            var last_node = _this.nodes[len-1];
+            last_node.clear();
+
+
+            for(var i=len-1;i>0;i--)
+            {
+                _this.nodes[i] = _this.nodes[i-1];
+            }
+
+            //判断no是不是糖果]
+            console.log(no);
+            no.snackInit();
+            _this.nodes[0] = no;
+
+            for (var index in foods){
+                if(foods[index].equals(no)){
+                    _this.addNode();
+                    foods.pop(no);
+                    break;
+                }
+            }
+
+
+			//运行一段时间之后总会报错
+			if(typeof (no) == 'undefined'){_this.stop();}
+
+
+
+        }
+		
+		this.stop = function(){
+			window.clearInterval(_this.runId);
+		}
+
+        this.addNode = function(){
+            var len = parseInt(_this.len);
+            var tail1 = _this.nodes[len-1];
+            var tail2 = _this.nodes[len-2];
+            var x1 = parseInt(tail1.x);
+            var x2 = parseInt(tail2.x);
+            var y1 = parseInt(tail1.y);
+            var y2 = parseInt(tail2.y);
+            var w  = parseInt(tail1.w);
+            var no = '';
+            if(x1 == x2 )
+            {
+                if(y1>y2) no = new node(x1,y1+w,w);
+                else no = new node(x1,y1-w,w);
+            }
+            else
+            {
+                if(x1>x2) no = new node(x1+w,y1,w);
+                else no = new node(x1-w,y1,w);
+            }
+            no.snackInit();
+            _this.nodes[len] = no;
+            _this.len = len+1;
+
+            _this.stop();
+            _this.speed = parseInt(_this.speed)-5;
+            this.runId = setInterval(_this.move,_this.speed);
+            farm.addFood();
+        }
+		
+		this.run = function(){
+			_this.runId = setInterval(_this.move,_this.speed);
+		}
+		this.run();
+
+		//监听事件
+		document.onkeydown = function(event){
+			
+			var code = event.keyCode;
+			var temp = 'L';//设置默认值，不要设置空字符串，不然方向丢失导致结点new出错
+			var flag = false;
+			switch(code){
+				case 87:temp = 'U';break;
+				case 68:temp = 'R';break;
+				case 83:temp = 'D';break;
+				case 65:temp = 'L';break;
+				
+				case 39:temp = 'R';break;
+				case 40:temp = 'D';break;
+				case 37:temp = 'L';break;
+				case 38:temp = 'U';break;
+
+				case 80:_this.stop();flag = true;break;//暂停
+				case 79:_this.run();break;//开始
+			}
+			if(flag)return false;
+			//判断方向是否和原来的头相反，若相反则无效
+			if((_this.dir == 'L' && temp == 'R')||(_this.dir == 'R' && temp == 'L')||(_this.dir == 'U' && temp == 'D')||(_this.dir == 'D' && temp == 'U')){
+				return false;
+			}else{
+				_this.odir = _this.dir;
+				_this.dir = temp;
+			}
+		}
+		
+        
+        init();
+    }
+
+    var snack = new snack(200,200,3,200);
+
+
+</script>
+</html>
