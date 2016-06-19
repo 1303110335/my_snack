@@ -1,0 +1,23 @@
+git总结 
+
+git config --global user.name "1303110335"
+git config --global user.email "1303110335@qq.com"
+  
+//解决每次提交push都要输入用户名和密码的问题 
+1.git config --global credential.helper store #可以长期存储第一次push所输入的用户名和密码
+
+//可以将修改的文件都提交(add+commit,但是不包括新建的文件)
+2.git commit -am 'alter'
+
+
+3.在远程端创建分支
+git push --set-upstream origin snack_test
+
+
+4.git branch testing #创建分支
+
+5.git branch -v #查看分支状态
+
+6.git checkout testing/master #切换分支
+
+7.git 
